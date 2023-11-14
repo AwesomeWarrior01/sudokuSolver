@@ -1,41 +1,25 @@
 import json
-import main
+from main import *
 import cv2
 
 import numpy as np
 import torch
-from flask import Flask, render_template, request
 from PIL import Image, ImageChops, ImageOps
 from torchvision import transforms
 
 from model import Model
 from train import SAVE_MODEL_PATH
 
-app = Flask(__name__)
-predict = None
 
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+def predict_digit(predict, img):
 
-
-@app.route("/DigitRecognition", methods=["POST"])
-def predict_digit():
-    #img = Image.open(request.files["img"]).convert("L") # TODO: edit this line to have a different image instead
-    #img = Image.open('Test7.jpeg')
-
-    # predict
-    res_json = {"pred": "Err", "probs": []}
     if predict is not None:
         res = predict(img)
-        res_json["pred"] = str(np.argmax(res))
         #The resulting integer can be returned as np argmax
-        print("pred: " + str(res_json["pred"]))
-        res_json["probs"] = [p * 100 for p in res]
-        # end of added code.
-
-    return json.dumps(res_json)
+        finalPredict = str(np.argmax(res))
+        #print("pred: " + finalPredict)
+        return finalPredict
 
 
 class Predict():
@@ -66,22 +50,4 @@ class Predict():
 
         return preds
 
-if __name__ == "__main__":
 
-    import os
-    assert os.path.exists(SAVE_MODEL_PATH), "no saved model"
-
-    img = Image.open('Test7.jpeg').convert("L")
-    # convert to binary
-    # load the input image
-
-    # convert the input image to grayscale
-    #gray = cv2.cvtColor(img_color, cv2.COLOR_BGR2GRAY)
-
-    # apply thresholding to convert grayscale to binary image
-    #ret,img = cv2.threshold(gray,70,255,0)
-
-
-    predict = Predict()
-
-    app.run(host="0.0.0.0")
