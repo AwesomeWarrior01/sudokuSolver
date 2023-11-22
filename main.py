@@ -8,22 +8,72 @@ import torch
 from PIL import Image, ImageChops, ImageOps
 
 
-class Analyze:
+class Analyze():
     def __init__(self):
-        #These are the lengths and widths in a normal sudoku board.
-        self.unit_widths = 9
-        self.unit_heights = 9
-        imageWhole = Image.open('images/sudoku_easy_1489.gif').convert("L")
+        # Image needs to be available to all methods in class.
+        #self.image = cv2.imread('images/sudoku_easy_1438.jpg', cv2.IMREAD_COLOR)
+        self.image = cv2.imread('images/sudoku_medium_1445.jpg', cv2.IMREAD_COLOR)
 
-    def get_Dimensions(self, img):
-        return img.size
+        # Just some image filtering stuff.
+        self.filter_image()
 
-        # return dimensions = (w,h)
-    def get_subArea(self, dimensions):
-        pass
+        # Erase sudoku gridlines twice.
+        for a in range(2):
+            self.erase_lines()
 
-    def filter_SubArea(self):
-        pass
+        # Median Blur image 3 times.
+        final_image = self.image
+        for b in range(3):
+            final_image = cv2.medianBlur(final_image, 7)
+
+        # Threshold image to get binary values.
+        ret,thresh = cv2.threshold(final_image,70,255,0)
+
+        # Parameters for cycling through sudoku puzzle image to obtain sub-images.
+        xrange = 80 
+        yrange = 80
+        x1 = 10
+        x2 = 165
+        k = 0
+
+        for i in range(9):
+            y1 = y2 = 10
+            
+            if i % 3 == 0:
+                x1 += 5
+            x2 = x1 + xrange
+            for j in range(9):
+                
+                if j % 3 == 0:
+                    y1 += 5
+                y2 = y1 + yrange
+                roi = thresh[x1:x2, y1:y2] # First element changes vertical position, second element changes horizontal position.
+
+                # output of the function. All images are written to this directory.
+                cv2.imwrite(f'/home/jason/python/sudoku_solver/cnn-digit-recognition-webapp/output/output{k}.jpg', roi)
+
+                k += 1
+                y1 += 110
+            x1 += 110
+    def filter_image(self):
+        # Resize, grayscale, blur, then canny image accordingly.
+        self.image = cv2.resize(self.image, (1000, 1000))
+
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+
+        blurred = cv2.GaussianBlur(gray, (3,3), 0)
+
+        self.Canny = cv2.Canny(blurred, 25, 200)
+        
+    def erase_lines(self):
+        # Uses self.Canny and self.Image class variables
+        lines = cv2.HoughLinesP(self.Canny, 0.25, np.pi/180, threshold=10, minLineLength=70, maxLineGap=10)
+
+        for line in lines:
+            x1, y1, x2, y2 = line[0]
+            # Draw white lines over black lines to erase again.
+            cv2.line(self.image, (x1, y1), (x2, y2), (255, 255, 255), 3)
+
 
 
 from train import SAVE_MODEL_PATH
@@ -31,8 +81,8 @@ if __name__ == "__main__":
     import os
     assert os.path.exists(SAVE_MODEL_PATH), "no saved model"
 
-    #img_gray = Image.open('Test7.jpeg').convert("L")
-    
+    Analyze()
+
     output = [[0 for _ in range(9)] for _ in range(9)] * 9 # output is a 9x9 matrix
     k = 0
     for i in range(9):
@@ -43,13 +93,7 @@ if __name__ == "__main__":
             predict = server.Predict()
             # Predict the number
             predictionNum = server.predict_digit(predict, img_gray)
-            # Printed output
-            #print(predictionNum)
-            #imageWhole = Image.open('images/sudoku_easy_1489.gif').convert("L")
-            #imageWhole = Image.open(f'output{i}.jpg').convert("L")
-            #analyzer = Analyze()
-            #dimensions = analyzer.get_Dimensions(imageWhole)
-            #print(dimensions)
+
             output[i][j] = predictionNum
             k += 1
 
