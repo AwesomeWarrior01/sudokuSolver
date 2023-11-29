@@ -88,7 +88,7 @@ def digitRec():
 
     Analyze(current_path)
     debug = [[0 for _ in range(9)] for _ in range(9)]
-    output = [[0 for _ in range(9)] for _ in range(9)] * 9 # output is a 9x9 matrix
+    output = [[0 for _ in range(9)] for _ in range(9)] # output is a 9x9 matrix
     k = 0
     for i in range(9):
         for j in range(9):
