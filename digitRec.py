@@ -8,7 +8,7 @@ import os
 class Analyze():
     def __init__(self, current_path):
         # Image needs to be available to all methods in class.
-        #self.image = cv2.imread('images/sudoku_easy_1438.jpg', cv2.IMREAD_COLOR)
+        # #self.image = cv2.imread('images/sudoku_easy_1438.jpg', cv2.IMREAD_COLOR)
         self.image = cv2.imread('images/sudoku_medium_1445.jpg', cv2.IMREAD_COLOR)
         cv2.imshow('image', self.image)
         cv2.waitKey(0)
@@ -99,6 +99,7 @@ def digitRec():
             # Predict the number
             # predictionNum is actually a tuple of (prediction, probabilities)
             predictionNum = server.predict_digit(predict, img_gray)
+            #print(str(predictionNum))
 
             output[i][j] = int(predictionNum[0])
             # This bit of code identifies any digits that the AI wasn't 100% sure about.

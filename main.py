@@ -1,4 +1,4 @@
-from digitRec import digitRec
+from digitRec import *
 
 if __name__ == "__main__":
     digits = digitRec()

@@ -19,7 +19,7 @@ def predict_digit(predict, img):
         #The resulting integer can be returned as np argmax
         finalPredict = str(np.argmax(res))
         #print("pred: " + finalPredict)
-        return finalPredict
+        return (finalPredict, res)
 
 
 class Predict():
