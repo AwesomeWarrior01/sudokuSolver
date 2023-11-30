@@ -1,9 +1,17 @@
 from digitRec import *
 from sudoku_algorithm import *
+from sudokuFiltering import *
+import copy
 
 if __name__ == "__main__":
     digits = digitRec()
     print(digits)
-    answer = runAlgorithm(digits)
+    digits_stored = copy.deepcopy(digits)
+    runAlgorithm(digits) # Note that 'digits' is passed by ref, so it is also the output of the function.
     for i in range(9):
-        print(answer[i])
+        print(digits[i])
+
+    for j in range(9):
+        for k in range(9):
+            digits[j][k] = digits[j][k] - digits_stored[j][k] # eliminates any numbers already shown on the sudoku board.
+    SudokuFilter(digits)

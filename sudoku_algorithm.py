@@ -1,18 +1,4 @@
 class SudokuSolver:
-    
-    # Function to print the Sudoku grid.
-    def printGrid(self, grid):
-        i = 0
-        answer = [[0 for _ in range(9)] for _ in range(9)]
-        for row in grid:
-            j = 0
-            for num in row:
-                answer[i][j] = num
-                #print(num, end=" ")
-                j += 1
-            #print()
-            i += 1
-        return answer
 
     # Function to check if a number can be placed in a specific row.
     def used_in_row(self, grid, row, num):
@@ -71,13 +57,12 @@ def runAlgorithm(example_grid):
 
     # Solve the Sudoku puzzle
     if solver.SolveSudoku(example_grid):
-        # Print the solved Sudoku grid
-        answer = solver.printGrid(example_grid)
+        pass
 
     else:
         print("No solution exists")
-        answer = 0
-    return answer
+        # Fill the sudoku board with all zeros. This makes it so that no solution will be shown.
+        example_grid = [[0 for _ in range(9)] for _ in range(9)]
 
 if __name__ == "__main__":
 # Example Sudoku puzzle
@@ -92,5 +77,5 @@ if __name__ == "__main__":
         [0, 0, 0, 4, 1, 9, 0, 0, 5],
         [0, 0, 0, 0, 8, 0, 0, 7, 9]
     ]
-    answer = runAlgorithm(example_grid)
+    runAlgorithm(example_grid)
 

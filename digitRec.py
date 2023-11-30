@@ -16,6 +16,9 @@ class Analyze():
 
         # Just some image filtering stuff.
         self.filter_image()
+        cv2.imshow('Canny', self.Canny)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
         # Erase sudoku gridlines twice.
         for a in range(2):
@@ -25,10 +28,14 @@ class Analyze():
         final_image = self.image
         for b in range(4):
             final_image = cv2.medianBlur(final_image, 7)
-
+        cv2.imshow('image', final_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
         # Threshold image to get binary values.
         ret,thresh = cv2.threshold(final_image,70,255,0)
-
+        cv2.imshow('thresh', thresh)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
         # Parameters for cycling through sudoku puzzle image to obtain sub-images.
         xrange = 80 
         yrange = 80
@@ -110,8 +117,6 @@ def digitRec():
             if guarentees == 10:
                 debug[i][j] = predictionNum[1]
                 print(str(i) + " " + str(j) + " " + str(debug[i][j]))
-                    
-            #debug[i][j] = str(predictionNum[1])
 
             k += 1
 
