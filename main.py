@@ -4,7 +4,10 @@ from sudokuFiltering import *
 import copy
 
 if __name__ == "__main__":
-    digits = digitRec()
+    # Filter image
+    warped = SudokuFilter()
+    # Digit Recognizer
+    digits = digitRec(warped)
     print(digits)
     digits_stored = copy.deepcopy(digits)
     runAlgorithm(digits) # Note that 'digits' is passed by ref, so it is also the output of the function.
@@ -14,4 +17,5 @@ if __name__ == "__main__":
     for j in range(9):
         for k in range(9):
             digits[j][k] = digits[j][k] - digits_stored[j][k] # eliminates any numbers already shown on the sudoku board.
-    SudokuFilter(digits)
+    Overlay_solution(warped, digits)
+    

@@ -81,9 +81,15 @@ def display_solution(original_image, solution, sodoku_size, text_size=0.65):
 
     return original_image
 
-def SudokuFilter(solution):
-    # Read the image
-    img = cv2.imread('images/sudoku_medium_1445.jpg')
+def SudokuFilter():
+    # Read the image (INPUT)
+    #img = cv2.imread('images/sudoku_medium_1445.jpg') # Used Working
+    #img = cv2.imread('images/sudoku_medium_750.jpg') # Used Working
+    img = cv2.imread('images/sudoku_medium_750_edit.jpg') # Used Working
+    #img = cv2.imread('images/testIMG.jpg') # Used lighter threshold, Working
+    #img = cv2.imread('images/news.jpg') # Doesn't work. More filtering would be needed.
+    #img = cv2.imread('images/news2.jpg') # Used Darker threshold, Working
+    #img = cv2.imread('images/color.png') # Doesn't work
 
     # Apply Gaussian blur
     img = cv2.GaussianBlur(img, (5, 5), 0)
@@ -124,27 +130,37 @@ def SudokuFilter(solution):
     # Find the four corners of the Sudoku puzzle
     pts = cv2.approxPolyDP(best_cnt, 0.02 * cv2.arcLength(best_cnt, True), True)
 
-    # Order the corners
-    pts = pts.reshape(4, 2)
-    rect = np.zeros((4, 2), dtype="float32")
-
-    s = pts.sum(axis=1)
-    rect[0] = pts[np.argmin(s)]
-    rect[2] = pts[np.argmax(s)]
-
-    diff = np.diff(pts, axis=1)
-    rect[1] = pts[np.argmin(diff)]
-    rect[3] = pts[np.argmax(diff)]
-
-    # Calculate the perspective transform matrix
+    # Set width and height
     w, h = 300, 300
-    dst = np.array([[0, 0], [w - 1, 0], [w - 1, h - 1], [0, h - 1]], dtype="float32")
 
-    M = cv2.getPerspectiveTransform(rect, dst)
+    # Order the corners
+    try:
+        pts = pts.reshape(4, 2)
+        rect = np.zeros((4, 2), dtype="float32")
 
-    # Apply the perspective transformation
-    warped = cv2.warpPerspective(img, M, (w, h))
+        s = pts.sum(axis=1)
+        rect[0] = pts[np.argmin(s)]
+        rect[2] = pts[np.argmax(s)]
 
+        diff = np.diff(pts, axis=1)
+        rect[1] = pts[np.argmin(diff)]
+        rect[3] = pts[np.argmax(diff)]
+
+        # Calculate the perspective transform matrix
+    
+        dst = np.array([[0, 0], [w - 1, 0], [w - 1, h - 1], [0, h - 1]], dtype="float32")
+
+        M = cv2.getPerspectiveTransform(rect, dst)
+
+        # Apply the perspective transformation
+        warped = cv2.warpPerspective(img, M, (w, h))
+
+    except:
+        warped = cv2.resize(img, (w,h))
+    return warped
+
+
+def Overlay_solution(warped, solution):
     # Count and display Sudoku lines with line merging
     lines_image, horizontal_lines, vertical_lines = count_sudoku_lines(warped)
 
@@ -167,4 +183,5 @@ if __name__ == "__main__":
                 [7, 0, 0, 0, 0, 4, 0, 0, 6],
                 [0, 4, 8, 5, 1, 0, 7, 3, 9],
                 [5, 0, 9, 8, 0, 7, 0, 0, 2]]
-    SudokuFilter(solution)
+    warped = SudokuFilter()
+    Overlay_solution(warped, solution)

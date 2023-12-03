@@ -6,10 +6,25 @@ from PIL import Image, ImageChops, ImageOps
 import os
 
 class Analyze():
-    def __init__(self, current_path):
+    def __init__(self, current_path, warped):
         # Image needs to be available to all methods in class.
         # #self.image = cv2.imread('images/sudoku_easy_1438.jpg', cv2.IMREAD_COLOR)
-        self.image = cv2.imread('images/sudoku_medium_1445.jpg', cv2.IMREAD_COLOR)
+        #self.image = cv2.imread('images/sudoku_medium_1445.jpg', cv2.IMREAD_COLOR)
+        #self.image = cv2.imread('images/testIMG.jpg', cv2.IMREAD_COLOR)
+
+        self.image = warped
+
+        self.image = cv2.cvtColor(self.image, cv2.COLOR_RGB2GRAY)
+
+        cv2.imshow('image', self.image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        ret, self.image = cv2.threshold(self.image,150,255,0) # lighter threshold
+        #ret, self.image = cv2.threshold(self.image,95,255,0) # For news2, Medium_1445
+
+        self.image = cv2.adaptiveThreshold(self.image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+            cv2.THRESH_BINARY,15,15)
         cv2.imshow('image', self.image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
@@ -23,17 +38,24 @@ class Analyze():
         # Erase sudoku gridlines twice.
         for a in range(2):
             self.erase_lines()
+            cv2.imshow('image', self.image)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            self.Canny = cv2.Canny(self.image, 25, 200)
 
+        
         # Median Blur image 3 times.
         final_image = self.image
-        for b in range(4):
-            final_image = cv2.medianBlur(final_image, 7)
+        for b in range(3):
+           final_image = cv2.medianBlur(final_image, 7)
         cv2.imshow('image', final_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
         # Threshold image to get binary values.
-        ret,thresh = cv2.threshold(final_image,70,255,0)
-        cv2.imshow('thresh', thresh)
+        #ret,final_image = cv2.threshold(final_image,200,255,0)
+
+        #final_image = cv2.dilate(final_image, (5,5))
+        cv2.imshow('erosion', final_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
         # Parameters for cycling through sudoku puzzle image to obtain sub-images.
@@ -60,7 +82,7 @@ class Analyze():
                 if j % 3 == 0:
                     y1 += 5
                 y2 = y1 + yrange
-                roi = thresh[x1:x2, y1:y2] # First element changes vertical position, second element changes horizontal position.
+                roi = final_image[x1:x2, y1:y2] # First element changes vertical position, second element changes horizontal position.
                 
                 # output of the function. All images are written to this directory.
                 cv2.imwrite(f'{current_path}/output/output{k}.jpg', roi)
@@ -73,27 +95,28 @@ class Analyze():
         # Resize, grayscale, blur, then canny image accordingly.
         self.image = cv2.resize(self.image, (1000, 1000))
 
-        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        #gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
 
-        blurred = cv2.GaussianBlur(gray, (3,3), 0)
+        blurred = cv2.GaussianBlur(self.image, (3,3), 0)
 
         self.Canny = cv2.Canny(blurred, 25, 200)
         
     def erase_lines(self):
         # Uses self.Canny and self.Image class variables
-        lines = cv2.HoughLinesP(self.Canny, 0.25, np.pi/180, threshold=10, minLineLength=70, maxLineGap=10)
+        lines = cv2.HoughLinesP(self.Canny, 0.25, np.pi/360, threshold=10, minLineLength=100, maxLineGap=20)
+        # 0.25, pi/180, 10, 70 10
 
         for line in lines:
             x1, y1, x2, y2 = line[0]
             # Draw white lines over black lines to erase
             cv2.line(self.image, (x1, y1), (x2, y2), (255, 255, 255), 3)
 
-def digitRec():
+def digitRec(warped):
     assert os.path.exists(SAVE_MODEL_PATH), "no saved model"
 
     current_path = os.getcwd()
 
-    Analyze(current_path)
+    Analyze(current_path, warped)
     debug = [[0 for _ in range(9)] for _ in range(9)]
     output = [[0 for _ in range(9)] for _ in range(9)] # output is a 9x9 matrix
     k = 0

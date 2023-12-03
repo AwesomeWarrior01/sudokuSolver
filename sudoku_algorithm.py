@@ -58,7 +58,6 @@ def runAlgorithm(example_grid):
     # Solve the Sudoku puzzle
     if solver.SolveSudoku(example_grid):
         pass
-
     else:
         print("No solution exists")
         # Fill the sudoku board with all zeros. This makes it so that no solution will be shown.
