@@ -8,7 +8,7 @@ import os
 class Analyze():
     def __init__(self, current_path, warped):
         # Image needs to be available to all methods in class.
-        # #self.image = cv2.imread('images/sudoku_easy_1438.jpg', cv2.IMREAD_COLOR)
+        #self.image = cv2.imread('images/sudoku_easy_1438.jpg', cv2.IMREAD_COLOR)
         #self.image = cv2.imread('images/sudoku_medium_1445.jpg', cv2.IMREAD_COLOR)
         #self.image = cv2.imread('images/testIMG.jpg', cv2.IMREAD_COLOR)
 
@@ -20,11 +20,11 @@ class Analyze():
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-        ret, self.image = cv2.threshold(self.image,150,255,0) # lighter threshold
-        #ret, self.image = cv2.threshold(self.image,95,255,0) # For news2, Medium_1445
+        #ret, self.image = cv2.threshold(self.image,150,255,0) # lighter threshold
+        ret, self.image = cv2.threshold(self.image,95,255,0) # For news2, Medium_1445
 
-        self.image = cv2.adaptiveThreshold(self.image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
-            cv2.THRESH_BINARY,15,15)
+        #self.image = cv2.adaptiveThreshold(self.image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+        #   cv2.THRESH_BINARY,15,15)
         cv2.imshow('image', self.image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
@@ -46,13 +46,13 @@ class Analyze():
         
         # Median Blur image 3 times.
         final_image = self.image
-        for b in range(3):
+        for b in range(3): # Use 6 iterations for 1445, otherwise use 3 iterations
            final_image = cv2.medianBlur(final_image, 7)
         cv2.imshow('image', final_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
         # Threshold image to get binary values.
-        #ret,final_image = cv2.threshold(final_image,200,255,0)
+        #ret,final_image = cv2.threshold(final_image,200,255,0) # Use for 1445
 
         #final_image = cv2.dilate(final_image, (5,5))
         cv2.imshow('erosion', final_image)

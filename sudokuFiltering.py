@@ -85,10 +85,10 @@ def SudokuFilter():
     # Read the image (INPUT)
     #img = cv2.imread('images/sudoku_medium_1445.jpg') # Used Working
     #img = cv2.imread('images/sudoku_medium_750.jpg') # Used Working
-    img = cv2.imread('images/sudoku_medium_750_edit.jpg') # Used Working
+    #img = cv2.imread('images/sudoku_medium_750_edit.jpg') # Used Working
     #img = cv2.imread('images/testIMG.jpg') # Used lighter threshold, Working
     #img = cv2.imread('images/news.jpg') # Doesn't work. More filtering would be needed.
-    #img = cv2.imread('images/news2.jpg') # Used Darker threshold, Working
+    img = cv2.imread('images/news2.jpg') # Used Darker threshold, Working
     #img = cv2.imread('images/color.png') # Doesn't work
 
     # Apply Gaussian blur

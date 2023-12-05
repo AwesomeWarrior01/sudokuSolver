@@ -12,7 +12,7 @@ if __name__ == "__main__":
     digits_stored = copy.deepcopy(digits)
     runAlgorithm(digits) # Note that 'digits' is passed by ref, so it is also the output of the function.
     for i in range(9):
-        print(digits[i])
+        print(digits[i]) # digits prints solution, digits_stored prints AI output
 
     for j in range(9):
         for k in range(9):
